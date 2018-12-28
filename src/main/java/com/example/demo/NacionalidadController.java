@@ -66,25 +66,22 @@ public class NacionalidadController {
 		return response;
 	}
 	
-	@PostMapping (value = "/saludo/")
-	public ResponseEntity<Nacionalidad> saludar(@PathVariable("id") long id, @RequestBody String saludado){
+	@PostMapping (value = "/saludo")
+	public ResponseEntity saludar(@RequestBody SaludoRequest req){
 		
-		Nacionalidad nacionalidad = null;
-		ResponseEntity<Nacionalidad> response = null;
+		Optional <Nacionalidad> nac = repository.findById(req.getId());
 		
-		Optional <Nacionalidad> nac = repository.findById(id);
 		if(nac.isPresent()) {
 			Nacionalidad nac2 = nac.get();
-			nac2.setSaludo(saludo);
-			nacionalidad = repository.save(nac2);
-			response = new ResponseEntity<Nacionalidad>(nacionalidad, HttpStatus.OK);
+			SaludoResponse resp = new SaludoResponse();
+			resp.setSaludo(String.format("%s %s!" ,  nac2.getSaludo(), req.getSaludado()));
+			return new ResponseEntity<SaludoResponse>(resp ,HttpStatus.OK);
 			
 		} else {
 			
-			response = new ResponseEntity<Nacionalidad>(nacionalidad, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
 		}
 		
-		return response;
 	}
 
 }
